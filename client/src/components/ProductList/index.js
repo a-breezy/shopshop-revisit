@@ -5,10 +5,11 @@ import ProductItem from "../ProductItem";
 import { QUERY_PRODUCTS } from "../../utils/queries";
 import { useStoreContext } from "../../utils/GlobalState";
 import { UPDATE_PRODUCTS } from "../../utils/actions";
+import { idbPromise } from "../../utils/helpers";
 import spinner from "../../assets/spinner.gif";
 
 function ProductList() {
-  // useStoreContext() is first to retrieve global state
+	// useStoreContext() is first to retrieve global state
 	const [state, dispatch] = useStoreContext();
 	const { currentCategory } = state;
 	const { loading, data } = useQuery(QUERY_PRODUCTS);
@@ -18,6 +19,10 @@ function ProductList() {
 			dispatch({
 				type: UPDATE_PRODUCTS,
 				products: data.products,
+			});
+
+			data.products.forEach((product) => {
+				idbPromise("products");
 			});
 		}
 	}, [data, dispatch]);
