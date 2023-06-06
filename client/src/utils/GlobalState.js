@@ -20,7 +20,8 @@ const StoreProvider = ({ value = [], ...props }) => {
 		categories: [],
 		currentCategory: "",
 	});
-	console.log(state);
+	// console.log(state);
+	
 	// wrapper component for whole app that houses the global state
 	return <Provider value={[state, dispatch]} {...props} />;
 };

@@ -15,17 +15,28 @@ function ProductList() {
 	const { loading, data } = useQuery(QUERY_PRODUCTS);
 
 	useEffect(() => {
+		// if there's data to store, dispatch it to global store
 		if (data) {
 			dispatch({
 				type: UPDATE_PRODUCTS,
 				products: data.products,
 			});
 
+			// for each product also save to idb
 			data.products.forEach((product) => {
-				idbPromise("products");
+				idbPromise("products", "put", product);
+			});
+		} else if (!loading) {
+			// when offline, get data from 'products' store
+			idbPromise("products", "get").then((products) => {
+				// use retrieved data to set gloabl store
+				dispatch({
+					type: UPDATE_PRODUCTS,
+					products: products,
+				});
 			});
 		}
-	}, [data, dispatch]);
+	}, [data, loading, dispatch]);
 
 	function filterProducts() {
 		if (!currentCategory) {

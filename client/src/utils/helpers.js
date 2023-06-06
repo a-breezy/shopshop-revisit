@@ -16,8 +16,8 @@ export function idbPromise(storeName, method, object) {
 		// if v changes, create three object stores
 		request.onupgradeneeded = function (e) {
 			const db = request.result;
-			// create object store for each type of data and set 'primary' key to '_id'
-			db.createObjectStore("product", { keyPath: "_id" });
+			// create object store for each type of data and set 'primary' key to data '_id'
+			db.createObjectStore("products", { keyPath: "_id" });
 			db.createObjectStore("categories", { keyPath: "_id" });
 			db.createObjectStore("cart", { keyPath: "_id" });
 		};
@@ -29,39 +29,39 @@ export function idbPromise(storeName, method, object) {
 		request.onsuccess = function (e) {
 			// save ref of db to 'db' variable
 			db = request.result;
-			// open transaction for 'storename'
+			// open transaction for 'storeName'
 			tx = db.transaction(storeName, "readwrite");
 			// save ref to that obj store
 			store = tx.objectStore(storeName);
-		};
 
-		db.onerror = function (e) {
-			console.log("error", e);
-		};
+			db.onerror = function (e) {
+				console.log("error", e);
+			};
 
-    // define crud operations
-		switch (method) {
-			case "put":
-				store.put(object);
-				resolve(object);
-				break;
-			case "get":
-				const all = store.getAll();
-				all.onsuccess = function () {
-					resolve(all.result);
-				};
-				break;
-			case "delete":
-				store.delete(object._id);
-				break;
-			default:
-				console.log("No valid method");
-				break;
-		}
+			// define crud operations
+			switch (method) {
+				case "put":
+					store.put(object);
+					resolve(object);
+					break;
+				case "get":
+					const all = store.getAll();
+					all.onsuccess = function () {
+						resolve(all.result);
+					};
+					break;
+				case "delete":
+					store.delete(object._id);
+					break;
+				default:
+					console.log("No valid method");
+					break;
+			}
 
-		// when transaction complete close connection
-		tx.oncomplete = function () {
-			db.close();
+			// when transaction complete close connection
+			tx.oncomplete = function () {
+				db.close();
+			};
 		};
 	});
 }
